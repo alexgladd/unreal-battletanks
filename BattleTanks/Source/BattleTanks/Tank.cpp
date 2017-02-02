@@ -10,6 +10,7 @@ ATank::ATank()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	AimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimingComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -31,5 +32,15 @@ void ATank::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 
+}
+
+void ATank::AimAt(FVector TargetLocation)
+{
+	AimingComponent->AimAt(TargetLocation);
+}
+
+void ATank::SetMuzzleReference(USceneComponent * TankMuzzle)
+{
+	AimingComponent->SetMuzzleReference(TankMuzzle);
 }
 

@@ -29,6 +29,17 @@ void AAITankController::BeginPlay()
 	}
 }
 
+void AAITankController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// TODO move towards the player
+	
+	AimTowardsPlayer();
+
+	// TODO fire the gun if ready
+}
+
 ATank* AAITankController::GetControlledTank() const
 {
 	auto tank = GetPawn();
@@ -39,4 +50,15 @@ ATank* AAITankController::GetPlayerTank() const
 {
 	auto tank = GetWorld()->GetFirstPlayerController()->GetPawn();
 	return (tank)? Cast<ATank>(tank) : nullptr;
+}
+
+void AAITankController::AimTowardsPlayer()
+{
+	if (!GetControlledTank()) return;
+
+	ATank* target = GetPlayerTank();
+
+	if (target) {
+		GetControlledTank()->AimAt(target->GetActorLocation());
+	}
 }

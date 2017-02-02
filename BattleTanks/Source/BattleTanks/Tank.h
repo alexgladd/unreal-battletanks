@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "TankAimingComponent.h"
+
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
@@ -23,6 +25,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	
-	
+	// Command the tank to aim at the given world location
+	void AimAt(FVector TargetLocation);
+
+	// Set the reference to the tank's muzzle
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetMuzzleReference(USceneComponent* TankMuzzle);
+
+protected:
+
+	UTankAimingComponent* AimingComponent = nullptr;
 };

@@ -28,6 +28,21 @@ public:
 	
 private:
 
+	// Horizontal screen location of the crosshair (0.0-1.0)
+	UPROPERTY(EditAnywhere)
+	float CrosshairLocX = 0.5f;
+
+	// Vertical screen location of the crosshair (0.0-1.0)
+	UPROPERTY(EditAnywhere)
+	float CrosshairLocY = 0.333333f;
+
+	// How far out should we attempt line trace for aiming
+	UPROPERTY(EditAnywhere)
+	float AimTraceRange = 1000000.f;
+
 	// Move the tank barrel towards the player's crosshair
 	void AimTowardsCrosshair();
+
+	// Get the world location the player is aiming at
+	bool GetSightRayHitLocation(FVector &HitLocation) const;
 };

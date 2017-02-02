@@ -21,6 +21,8 @@ void APlayerTankController::BeginPlay()
 void APlayerTankController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	AimTowardsCrosshair();
 }
 
 ATank* APlayerTankController::GetControlledTank() const
@@ -33,5 +35,42 @@ void APlayerTankController::AimTowardsCrosshair()
 	if (!GetControlledTank()) return;
 
 	// get the world location of a linetrace through the crosshair
-	// start moving the turret and barrel to point at that world location
+	FVector hitLocation;
+	if (GetSightRayHitLocation(hitLocation)) {
+		// ask the controlled tank to aim at the location
+		GetControlledTank()->AimAt(hitLocation);
+	}
+}
+
+bool APlayerTankController::GetSightRayHitLocation(FVector & HitLocation) const
+{
+	// find the crosshair position
+	int32 viewportWidth, viewportHeight;
+	GetViewportSize(viewportWidth, viewportHeight);
+
+	FVector2D screenLocation = FVector2D(viewportWidth * CrosshairLocX, viewportHeight * CrosshairLocY);
+
+	FVector worldLoc, worldDir;
+	if (DeprojectScreenPositionToWorld(screenLocation.X, screenLocation.Y, worldLoc, worldDir)) {
+		// linetrace to find the world position we're aiming at
+		FHitResult traceResult;
+		auto traceStart = PlayerCameraManager->GetCameraLocation();
+		auto traceEnd = traceStart + (worldDir * AimTraceRange);
+
+		if (GetWorld()->LineTraceSingleByChannel(
+				traceResult,
+				traceStart,
+				traceEnd,
+				ECollisionChannel::ECC_Visibility)) {
+			// successful trace
+			HitLocation = traceResult.Location;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
 }
