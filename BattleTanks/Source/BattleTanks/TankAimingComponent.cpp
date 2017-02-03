@@ -3,6 +3,9 @@
 #include "BattleTanks.h"
 #include "TankAimingComponent.h"
 
+#include "TankBarrel.h"
+#include "TankTurret.h"
+
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -15,6 +18,12 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+
+void UTankAimingComponent::SetupAiming(UTankTurret * TankTurret, UTankBarrel * TankBarrel)
+{
+	Turret = TankTurret;
+	Barrel = TankBarrel;
+}
 
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -34,13 +43,44 @@ void UTankAimingComponent::TickComponent( float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UTankAimingComponent::AimAt(FVector TargetLocation)
+void UTankAimingComponent::AimAt(FVector TargetLocation, float ProjectileSpeed)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tank %s aiming at location %s from %s"), *GetOwner()->GetName(), *TargetLocation.ToString(), *Muzzle->GetComponentLocation().ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Tank %s aiming at location %s from %s"), *GetOwner()->GetName(), *TargetLocation.ToString(), *Muzzle->GetComponentLocation().ToString());
+
+	if (!Barrel || !Turret) {
+		UE_LOG(LogTemp, Warning, TEXT("Tank %s needs barrel and turret references!"), *GetOwner()->GetName());
+		return;
+	}
+
+	FVector firingSolution;
+
+	if (UGameplayStatics::SuggestProjectileVelocity(this, firingSolution, Barrel->GetSocketLocation(FName("Muzzle")), TargetLocation, ProjectileSpeed, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace)) {
+		auto muzzleAim = firingSolution.GetSafeNormal();
+		//UE_LOG(LogTemp, Warning, TEXT("Tank %s calculated muzzle aim %s"), *GetOwner()->GetName(), *muzzleAim.ToString());
+		RotateTowardsFireSolution(muzzleAim);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Tank %s unable to calculate firing solution"), *GetOwner()->GetName());
+	}
 }
 
-void UTankAimingComponent::SetMuzzleReference(USceneComponent * TankMuzzle)
+void UTankAimingComponent::SetBarrelReference(UTankBarrel * TankBarrel)
 {
-	Muzzle = TankMuzzle;
+	Barrel = TankBarrel;
+}
+
+void UTankAimingComponent::RotateTowardsFireSolution(FVector FireSolution)
+{
+	auto muzzleRot = Barrel->GetForwardVector().Rotation();
+	auto solutionRot = FireSolution.Rotation();
+	auto deltaRot = solutionRot - muzzleRot;
+
+	//UE_LOG(LogTemp, Warning, TEXT("Tank %s delta rotation for fire solution: %s"), *GetOwner()->GetName(), *deltaRot.ToString());
+
+	// elevate towards our delta pitch
+	Barrel->Elevate(deltaRot.Pitch);
+	
+	// rotate towards our delta yaw (always go the short way)
+	(FMath::Abs<float>(deltaRot.Yaw) < 180)? Turret->Rotate(deltaRot.Yaw) : Turret->Rotate(-deltaRot.Yaw);
 }
 

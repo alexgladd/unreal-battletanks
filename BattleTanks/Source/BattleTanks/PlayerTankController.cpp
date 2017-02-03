@@ -3,6 +3,8 @@
 #include "BattleTanks.h"
 #include "PlayerTankController.h"
 
+#include "Tank.h"
+
 
 void APlayerTankController::BeginPlay()
 {

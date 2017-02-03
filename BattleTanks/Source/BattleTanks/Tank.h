@@ -2,10 +2,12 @@
 
 #pragma once
 
-#include "TankAimingComponent.h"
-
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
+
+// forward decls
+class UTankAimingComponent;
+class UTankBarrel;
 
 UCLASS()
 class BATTLETANKS_API ATank : public APawn
@@ -18,9 +20,6 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
@@ -28,11 +27,12 @@ public:
 	// Command the tank to aim at the given world location
 	void AimAt(FVector TargetLocation);
 
-	// Set the reference to the tank's muzzle
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetMuzzleReference(USceneComponent* TankMuzzle);
-
 protected:
 
 	UTankAimingComponent* AimingComponent = nullptr;
+
+private:
+	// Muzzle speed of fired projectiles (units per second)
+	UPROPERTY(EditAnywhere, Category = Firing)
+	float MuzzleVelocity = 100000.f;
 };

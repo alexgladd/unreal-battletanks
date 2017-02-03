@@ -5,7 +5,11 @@
 #include "Components/ActorComponent.h"
 #include "TankAimingComponent.generated.h"
 
+// forward decls
+class UTankBarrel;
+class UTankTurret;
 
+// Controls the aiming of the turret and barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANKS_API UTankAimingComponent : public UActorComponent
 {
@@ -15,6 +19,10 @@ public:
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 
+	// Setup the aiming system with turret and barrel references
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetupAiming(UTankTurret* TankTurret, UTankBarrel* TankBarrel);
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -22,12 +30,18 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	// Command the component to aim at the given world location
-	void AimAt(FVector TargetLocation);
+	void AimAt(FVector TargetLocation, float ProjectileSpeed);
 
-	// Set the reference to the tank's muzzle
-	void SetMuzzleReference(USceneComponent* TankMuzzle);
+	// Set the reference to the tank's barrel
+	void SetBarrelReference(UTankBarrel* TankBarrel);
 
 private:
-	// Reference to the tank's muzzle
-	USceneComponent* Muzzle = nullptr;
+	// Reference to the tank's barrel
+	UTankBarrel* Barrel = nullptr;
+
+	// Reference to the tank's turret
+	UTankTurret* Turret = nullptr;
+
+	// Elevate the barrel towards the given fire solution
+	void RotateTowardsFireSolution(FVector FireSolution);
 };

@@ -3,12 +3,14 @@
 #include "BattleTanks.h"
 #include "Tank.h"
 
+#include "TankAimingComponent.h"
+
 
 // Sets default values
 ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	AimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimingComponent"));
 }
@@ -20,13 +22,6 @@ void ATank::BeginPlay()
 	
 }
 
-// Called every frame
-void ATank::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
-}
-
 // Called to bind functionality to input
 void ATank::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
@@ -36,11 +31,5 @@ void ATank::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ATank::AimAt(FVector TargetLocation)
 {
-	AimingComponent->AimAt(TargetLocation);
+	AimingComponent->AimAt(TargetLocation, MuzzleVelocity);
 }
-
-void ATank::SetMuzzleReference(USceneComponent * TankMuzzle)
-{
-	AimingComponent->SetMuzzleReference(TankMuzzle);
-}
-
