@@ -9,6 +9,15 @@
 class UTankBarrel;
 class UTankTurret;
 
+// Enumeration of fire control states
+UENUM()
+enum class EFiringState : uint8
+{
+	Reloading,
+	Aiming,
+	Locked
+};
+
 // Controls the aiming of the turret and barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANKS_API UTankAimingComponent : public UActorComponent
@@ -34,6 +43,12 @@ public:
 
 	// Set the reference to the tank's barrel
 	void SetBarrelReference(UTankBarrel* TankBarrel);
+
+protected:
+
+	// Current firing state
+	UPROPERTY(BlueprintReadOnly, Category = Firing)
+	EFiringState FiringState = EFiringState::Reloading;
 
 private:
 	// Reference to the tank's barrel

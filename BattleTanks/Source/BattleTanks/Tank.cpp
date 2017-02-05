@@ -31,13 +31,6 @@ void ATank::BeginPlay()
 	LastFireTime = FPlatformTime::Seconds();
 }
 
-// Called to bind functionality to input
-void ATank::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
-	Super::SetupPlayerInputComponent(InputComponent);
-
-}
-
 void ATank::AimAt(FVector TargetLocation)
 {
 	AimingComponent->AimAt(TargetLocation, MuzzleVelocity);
@@ -47,9 +40,11 @@ void ATank::Fire()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Tank %s FIRE command!"), *GetName());
 
+	if (!ensure(Barrel)) return;
+
 	bool bLoaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
 
-	if (Barrel && bLoaded) {
+	if (bLoaded) {
 		// spawn projectile with muzzle location and rotation
 		FName muzzleSocket("Muzzle");
 		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, Barrel->GetSocketLocation(muzzleSocket), Barrel->GetSocketRotation(muzzleSocket));

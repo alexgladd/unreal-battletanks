@@ -22,7 +22,10 @@ public:
 	// Called every frame
 	void Tick(float DeltaTime) override;
 
+protected:
+
 	// Return the tank pawn that this player controls
+	UFUNCTION(BlueprintCallable, Category = Setup)
 	ATank* GetControlledTank() const;
 	
 private:

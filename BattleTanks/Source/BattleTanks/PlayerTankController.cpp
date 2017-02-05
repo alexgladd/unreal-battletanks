@@ -11,13 +11,7 @@ void APlayerTankController::BeginPlay()
 	Super::BeginPlay();
 
 	ATank* myTank = GetControlledTank();
-
-	if (myTank) {
-		UE_LOG(LogTemp, Warning, TEXT("Player has controlled tank %s"), *myTank->GetName());
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Player does not have controlled tank!"));
-	}
+	ensure(myTank);
 }
 
 void APlayerTankController::Tick(float DeltaTime)
@@ -34,7 +28,7 @@ ATank* APlayerTankController::GetControlledTank() const
 
 void APlayerTankController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank()) return;
+	if (!ensure(GetControlledTank())) return;
 
 	// get the world location of a linetrace through the crosshair
 	FVector hitLocation;

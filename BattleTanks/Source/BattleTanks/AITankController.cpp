@@ -19,7 +19,7 @@ void AAITankController::Tick(float DeltaSeconds)
 	auto myTank = Cast<ATank>(GetPawn());
 	auto targetTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
-	if (myTank && targetTank) {
+	if (ensure(myTank && targetTank)) {
 		// move towards the player
 		MoveToActor(targetTank, ApproachDistance);
 
@@ -28,8 +28,5 @@ void AAITankController::Tick(float DeltaSeconds)
 
 		// TODO fire the gun if ready
 		myTank->Fire();
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("AI %s doesn't have correct tank pawn references!"), *GetName());
 	}
 }

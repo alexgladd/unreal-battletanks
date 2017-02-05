@@ -23,9 +23,6 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-
 	// Command the tank to aim at the given world location
 	void AimAt(FVector TargetLocation);
 

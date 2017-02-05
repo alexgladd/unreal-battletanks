@@ -47,10 +47,7 @@ void UTankAimingComponent::AimAt(FVector TargetLocation, float ProjectileSpeed)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Tank %s aiming at location %s from %s"), *GetOwner()->GetName(), *TargetLocation.ToString(), *Muzzle->GetComponentLocation().ToString());
 
-	if (!Barrel || !Turret) {
-		UE_LOG(LogTemp, Warning, TEXT("Tank %s needs barrel and turret references!"), *GetOwner()->GetName());
-		return;
-	}
+	if (!ensure(Barrel && Turret)) return;
 
 	FVector firingSolution;
 

@@ -8,10 +8,7 @@
 
 void UTankMovementComponent::Initialize(UTankTrack* LeftTankTrack, UTankTrack* RightTankTrack)
 {
-	if (!LeftTankTrack || !RightTankTrack) {
-		UE_LOG(LogTemp, Error, TEXT("Initialization failure for tank tracks on %s"), *GetOwner()->GetName());
-	}
-	else {
+	if (ensure(LeftTankTrack && RightTankTrack)) {
 		LeftTrack = LeftTankTrack;
 		RightTrack = RightTankTrack;
 	}
@@ -19,7 +16,7 @@ void UTankMovementComponent::Initialize(UTankTrack* LeftTankTrack, UTankTrack* R
 
 void UTankMovementComponent::MoveForward(float Throw)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("%s forward movement request: %f"), *GetOwner()->GetName(), Throw);
+	if (!ensure(LeftTrack && RightTrack)) return;
 
 	// throttle up both tracks
 	LeftTrack->SetThrottle(Throw);
@@ -28,6 +25,8 @@ void UTankMovementComponent::MoveForward(float Throw)
 
 void UTankMovementComponent::TurnRight(float Throw)
 {
+	if (!ensure(LeftTrack && RightTrack)) return;
+
 	// throttle tracks in opposite directions
 	RightTrack->SetThrottle(-Throw);
 	LeftTrack->SetThrottle(Throw);
