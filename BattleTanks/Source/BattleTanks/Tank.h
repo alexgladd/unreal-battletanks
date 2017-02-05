@@ -7,7 +7,9 @@
 
 // forward decls
 class UTankAimingComponent;
+class UTankMovementComponent;
 class UTankBarrel;
+class AProjectile;
 
 UCLASS()
 class BATTLETANKS_API ATank : public APawn
@@ -27,12 +29,32 @@ public:
 	// Command the tank to aim at the given world location
 	void AimAt(FVector TargetLocation);
 
+	// Fire the main gun
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	void Fire();
+
 protected:
 
+	UPROPERTY(BlueprintReadOnly, Category = Firing)
 	UTankAimingComponent* AimingComponent = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = Driving)
+	UTankMovementComponent* MovementComponent = nullptr;
 
 private:
 	// Muzzle speed of fired projectiles (units per second)
-	UPROPERTY(EditAnywhere, Category = Firing)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float MuzzleVelocity = 100000.f;
+
+	// Time to reload the gun (seconds)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTime = 3.f;
+
+	// Reference to projectile prototype
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileToSpawn;
+
+	UTankBarrel* Barrel;
+
+	double LastFireTime = 0.0;
 };
