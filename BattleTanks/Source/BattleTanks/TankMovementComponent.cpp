@@ -35,16 +35,24 @@ void UTankMovementComponent::TurnRight(float Throw)
 
 void UTankMovementComponent::RequestDirectMove(const FVector & MoveVelocity, bool bForceMaxSpeed)
 {
-	// get relative direction
-	auto relativeMove = (MoveVelocity.GetSafeNormal() - GetOwner()->GetActorForwardVector()).GetSafeNormal();
+	// get requested move direction
+	auto moveDirection = MoveVelocity.GetSafeNormal();
+	// get my forward
+	auto tankForward = GetOwner()->GetActorForwardVector().GetSafeNormal();
 
-	// TODO figure this out
+	//UE_LOG(LogTemp, Warning, TEXT("AI %s requested move direction: %s"), *GetOwner()->GetName(), *moveDirection.ToString());
+	//DrawDebugLine(GetWorld(), GetOwner()->GetActorLocation(), (GetOwner()->GetActorLocation() + (moveDirection * 1000.f)), FColor(255, 0, 0), false, -1.f, 0, 5.f);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s got forward direction: %s"), *GetOwner()->GetName(), *GetOwner()->GetActorForwardVector().ToString());
-	UE_LOG(LogTemp, Warning, TEXT("%s got relative move direction: %s"), *GetOwner()->GetName(), *relativeMove.ToString());
+	// dot product for 'forward' intention
+	auto forwardThrow = FVector::DotProduct(moveDirection, tankForward);
 
-	// move based on directions
-	MoveForward(relativeMove.X);
-	TurnRight(relativeMove.Y);
+	// cross product for 'turning' intention
+	auto turnRightThrow = FVector::CrossProduct(tankForward, moveDirection).Z;
+
+	//UE_LOG(LogTemp, Warning, TEXT("AI %s calculated move throws: [%f forward, %f right]"), *GetOwner()->GetName(), forwardThrow, turnRightThrow);
+
+	// move based on the calculated throws
+	MoveForward(forwardThrow);
+	TurnRight(turnRightThrow);
 }
 
