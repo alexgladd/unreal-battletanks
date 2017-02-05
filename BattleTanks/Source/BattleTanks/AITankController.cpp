@@ -20,7 +20,8 @@ void AAITankController::Tick(float DeltaSeconds)
 	auto targetTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 	if (myTank && targetTank) {
-		// TODO move towards the player
+		// move towards the player
+		MoveToActor(targetTank, ApproachDistance);
 
 		// aim towards the target
 		myTank->AimAt(targetTank->GetActorLocation());
