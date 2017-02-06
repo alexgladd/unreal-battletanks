@@ -5,8 +5,6 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerTankController.generated.h"
 
-// forward decls
-class ATank;
 
 // A Player controlled tank
 UCLASS()
@@ -21,12 +19,6 @@ public:
 
 	// Called every frame
 	void Tick(float DeltaTime) override;
-
-protected:
-
-	// Return the tank pawn that this player controls
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	ATank* GetControlledTank() const;
 	
 private:
 

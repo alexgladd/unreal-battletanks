@@ -8,6 +8,7 @@
 // forward decls
 class UTankBarrel;
 class UTankTurret;
+class AProjectile;
 
 // Enumeration of fire control states
 UENUM()
@@ -32,6 +33,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetupAiming(UTankTurret* TankTurret, UTankBarrel* TankBarrel);
 
+	// Fire the main gun
+	UFUNCTION(BlueprintCallable, Category = Firing)
+	void Fire();
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	
@@ -39,18 +44,31 @@ public:
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 	// Command the component to aim at the given world location
-	void AimAt(FVector TargetLocation, float ProjectileSpeed);
-
-	// Set the reference to the tank's barrel
-	void SetBarrelReference(UTankBarrel* TankBarrel);
+	void AimAt(FVector TargetLocation);
 
 protected:
 
 	// Current firing state
 	UPROPERTY(BlueprintReadOnly, Category = Firing)
-	EFiringState FiringState = EFiringState::Reloading;
+	EFiringState FiringState = EFiringState::Locked;
 
 private:
+
+	// Muzzle speed of fired projectiles (units per second)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float MuzzleVelocity = 10000.f;
+
+	// Time to reload the gun (seconds)
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTime = 3.f;
+
+	// Reference to projectile prototype
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	TSubclassOf<AProjectile> ProjectileToSpawn;
+
+	// Last time the gun was fired
+	double LastFireTime = 0.0;
+
 	// Reference to the tank's barrel
 	UTankBarrel* Barrel = nullptr;
 

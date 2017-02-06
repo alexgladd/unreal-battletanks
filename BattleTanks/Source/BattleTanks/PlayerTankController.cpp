@@ -3,15 +3,12 @@
 #include "BattleTanks.h"
 #include "PlayerTankController.h"
 
-#include "Tank.h"
+#include "TankAimingComponent.h"
 
 
 void APlayerTankController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ATank* myTank = GetControlledTank();
-	ensure(myTank);
 }
 
 void APlayerTankController::Tick(float DeltaTime)
@@ -21,20 +18,20 @@ void APlayerTankController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
-ATank* APlayerTankController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
 void APlayerTankController::AimTowardsCrosshair()
 {
-	if (!ensure(GetControlledTank())) return;
+	if (!ensure(GetPawn())) return;
+
+	// get our tank's aiming component
+	auto fireControl = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+
+	if (!ensure(fireControl)) return;
 
 	// get the world location of a linetrace through the crosshair
 	FVector hitLocation;
 	if (GetSightRayHitLocation(hitLocation)) {
 		// ask the controlled tank to aim at the location
-		GetControlledTank()->AimAt(hitLocation);
+		fireControl->AimAt(hitLocation);
 	}
 }
 

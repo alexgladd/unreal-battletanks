@@ -5,8 +5,6 @@
 
 #include "TankAimingComponent.h"
 #include "TankMovementComponent.h"
-#include "TankBarrel.h"
-#include "Projectile.h"
 
 
 // Sets default values
@@ -23,35 +21,4 @@ ATank::ATank()
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// get ref to barrel
-	Barrel = FindComponentByClass<UTankBarrel>();
-
-	// need to start with a reload
-	LastFireTime = FPlatformTime::Seconds();
-}
-
-void ATank::AimAt(FVector TargetLocation)
-{
-	AimingComponent->AimAt(TargetLocation, MuzzleVelocity);
-}
-
-void ATank::Fire()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Tank %s FIRE command!"), *GetName());
-
-	if (!ensure(Barrel)) return;
-
-	bool bLoaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
-
-	if (bLoaded) {
-		// spawn projectile with muzzle location and rotation
-		FName muzzleSocket("Muzzle");
-		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, Barrel->GetSocketLocation(muzzleSocket), Barrel->GetSocketRotation(muzzleSocket));
-
-		// launch the projectile
-		projectile->LaunchProjectile(MuzzleVelocity);
-
-		LastFireTime = FPlatformTime::Seconds();
-	}
 }

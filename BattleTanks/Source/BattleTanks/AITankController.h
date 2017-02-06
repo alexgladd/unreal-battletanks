@@ -5,8 +5,6 @@
 #include "AIController.h"
 #include "AITankController.generated.h"
 
-// forward decls
-class ATank;
 
 // An AI controlled tank
 UCLASS()

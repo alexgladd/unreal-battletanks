@@ -5,6 +5,7 @@
 
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 
 
 // Sets default values for this component's properties
@@ -25,13 +26,31 @@ void UTankAimingComponent::SetupAiming(UTankTurret * TankTurret, UTankBarrel * T
 	Barrel = TankBarrel;
 }
 
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(Barrel)) return;
+
+	bool bLoaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
+
+	if (bLoaded) {
+		// spawn projectile with muzzle location and rotation
+		FName muzzleSocket("Muzzle");
+		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, Barrel->GetSocketLocation(muzzleSocket), Barrel->GetSocketRotation(muzzleSocket));
+
+		// launch the projectile
+		projectile->LaunchProjectile(MuzzleVelocity);
+
+		LastFireTime = FPlatformTime::Seconds();
+	}
+}
+
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	// force tanks to start with a reload
+	LastFireTime = FPlatformTime::Seconds();
 }
 
 
@@ -43,7 +62,7 @@ void UTankAimingComponent::TickComponent( float DeltaTime, ELevelTick TickType, 
 	// ...
 }
 
-void UTankAimingComponent::AimAt(FVector TargetLocation, float ProjectileSpeed)
+void UTankAimingComponent::AimAt(FVector TargetLocation)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Tank %s aiming at location %s from %s"), *GetOwner()->GetName(), *TargetLocation.ToString(), *Muzzle->GetComponentLocation().ToString());
 
@@ -51,7 +70,7 @@ void UTankAimingComponent::AimAt(FVector TargetLocation, float ProjectileSpeed)
 
 	FVector firingSolution;
 
-	if (UGameplayStatics::SuggestProjectileVelocity(this, firingSolution, Barrel->GetSocketLocation(FName("Muzzle")), TargetLocation, ProjectileSpeed, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace)) {
+	if (UGameplayStatics::SuggestProjectileVelocity(this, firingSolution, Barrel->GetSocketLocation(FName("Muzzle")), TargetLocation, MuzzleVelocity, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace)) {
 		auto muzzleAim = firingSolution.GetSafeNormal();
 		//UE_LOG(LogTemp, Warning, TEXT("Tank %s calculated muzzle aim %s"), *GetOwner()->GetName(), *muzzleAim.ToString());
 		RotateTowardsFireSolution(muzzleAim);
@@ -59,11 +78,6 @@ void UTankAimingComponent::AimAt(FVector TargetLocation, float ProjectileSpeed)
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Tank %s unable to calculate firing solution"), *GetOwner()->GetName());
 	}
-}
-
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * TankBarrel)
-{
-	Barrel = TankBarrel;
 }
 
 void UTankAimingComponent::RotateTowardsFireSolution(FVector FireSolution)

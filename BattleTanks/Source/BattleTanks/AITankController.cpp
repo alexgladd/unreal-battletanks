@@ -3,7 +3,7 @@
 #include "BattleTanks.h"
 #include "AITankController.h"
 
-#include "Tank.h"
+#include "TankAimingComponent.h"
 
 
 void AAITankController::BeginPlay()
@@ -15,18 +15,22 @@ void AAITankController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// get references
-	auto myTank = Cast<ATank>(GetPawn());
-	auto targetTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	
-	if (ensure(myTank && targetTank)) {
-		// move towards the player
-		MoveToActor(targetTank, ApproachDistance);
+	// get references 
+	auto targetTank = GetWorld()->GetFirstPlayerController()->GetPawn();
+	if (!ensure(targetTank)) return;
 
-		// aim towards the target
-		myTank->AimAt(targetTank->GetActorLocation());
+	auto myTank = GetPawn();
+	if (!ensure(myTank)) return;
 
-		// TODO fire the gun if ready
-		myTank->Fire();
-	}
+	// move towards the target
+	MoveToActor(targetTank, ApproachDistance);
+
+	// aim towards the target and fire
+	auto fireControl = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(fireControl)) return;
+	fireControl->AimAt(targetTank->GetActorLocation());
+
+	// fire the gun
+	// TODO only fire when our aim is reasonably close?
+	//fireControl->Fire();
 }
