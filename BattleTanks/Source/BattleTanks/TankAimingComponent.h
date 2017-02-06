@@ -50,7 +50,7 @@ protected:
 
 	// Current firing state
 	UPROPERTY(BlueprintReadOnly, Category = Firing)
-	EFiringState FiringState = EFiringState::Locked;
+	EFiringState FiringState = EFiringState::Reloading;
 
 private:
 
@@ -74,6 +74,9 @@ private:
 
 	// Reference to the tank's turret
 	UTankTurret* Turret = nullptr;
+
+	// Last calculated desired muzzle aim
+	FVector RequestedMuzzleAim;
 
 	// Elevate the barrel towards the given fire solution
 	void RotateTowardsFireSolution(FVector FireSolution);

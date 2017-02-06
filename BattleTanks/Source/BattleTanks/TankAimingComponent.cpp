@@ -15,8 +15,6 @@ UTankAimingComponent::UTankAimingComponent()
 	// off to improve performance if you don't need them.
 	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -30,9 +28,7 @@ void UTankAimingComponent::Fire()
 {
 	if (!ensure(Barrel)) return;
 
-	bool bLoaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
-
-	if (bLoaded) {
+	if (FiringState != EFiringState::Reloading) {
 		// spawn projectile with muzzle location and rotation
 		FName muzzleSocket("Muzzle");
 		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, Barrel->GetSocketLocation(muzzleSocket), Barrel->GetSocketRotation(muzzleSocket));
@@ -40,6 +36,8 @@ void UTankAimingComponent::Fire()
 		// launch the projectile
 		projectile->LaunchProjectile(MuzzleVelocity);
 
+		// start reloading
+		FiringState = EFiringState::Reloading;
 		LastFireTime = FPlatformTime::Seconds();
 	}
 }
@@ -50,7 +48,13 @@ void UTankAimingComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// force tanks to start with a reload
+	FiringState = EFiringState::Reloading;
 	LastFireTime = FPlatformTime::Seconds();
+
+	// init muzzle aim
+	if (ensure(Barrel)) {
+		RequestedMuzzleAim = Barrel->GetForwardVector().GetSafeNormal();
+	}
 }
 
 
@@ -59,7 +63,15 @@ void UTankAimingComponent::TickComponent( float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	// ...
+	if ((FPlatformTime::Seconds() - LastFireTime) <= ReloadTime) {
+		FiringState = EFiringState::Reloading;
+	}
+	else if (!RequestedMuzzleAim.Equals(Barrel->GetForwardVector(), 0.01f)) {
+		FiringState = EFiringState::Aiming;
+	}
+	else {
+		FiringState = EFiringState::Locked;
+	}
 }
 
 void UTankAimingComponent::AimAt(FVector TargetLocation)
@@ -71,9 +83,8 @@ void UTankAimingComponent::AimAt(FVector TargetLocation)
 	FVector firingSolution;
 
 	if (UGameplayStatics::SuggestProjectileVelocity(this, firingSolution, Barrel->GetSocketLocation(FName("Muzzle")), TargetLocation, MuzzleVelocity, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace)) {
-		auto muzzleAim = firingSolution.GetSafeNormal();
-		//UE_LOG(LogTemp, Warning, TEXT("Tank %s calculated muzzle aim %s"), *GetOwner()->GetName(), *muzzleAim.ToString());
-		RotateTowardsFireSolution(muzzleAim);
+		RequestedMuzzleAim = firingSolution.GetSafeNormal();
+		RotateTowardsFireSolution(RequestedMuzzleAim);
 	}
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("Tank %s unable to calculate firing solution"), *GetOwner()->GetName());
@@ -85,8 +96,6 @@ void UTankAimingComponent::RotateTowardsFireSolution(FVector FireSolution)
 	auto muzzleRot = Barrel->GetForwardVector().Rotation();
 	auto solutionRot = FireSolution.Rotation();
 	auto deltaRot = solutionRot - muzzleRot;
-
-	//UE_LOG(LogTemp, Warning, TEXT("Tank %s delta rotation for fire solution: %s"), *GetOwner()->GetName(), *deltaRot.ToString());
 
 	// elevate towards our delta pitch
 	Barrel->Elevate(deltaRot.Pitch);
