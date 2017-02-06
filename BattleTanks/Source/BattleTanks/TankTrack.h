@@ -12,6 +12,12 @@ class BATTLETANKS_API UTankTrack : public UStaticMeshComponent
 	GENERATED_BODY()
 	
 public:
+
+	// Constructor
+	UTankTrack();
+
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	// Set the throttle for the track
 	UFUNCTION(BlueprintCallable, Category = Driving)

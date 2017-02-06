@@ -20,7 +20,8 @@ void APlayerTankController::Tick(float DeltaTime)
 
 void APlayerTankController::AimTowardsCrosshair()
 {
-	if (!ensure(GetPawn())) return;
+	// may not always pocess a pawn
+	if (!GetPawn()) return;
 
 	// get our tank's aiming component
 	auto fireControl = GetPawn()->FindComponentByClass<UTankAimingComponent>();
