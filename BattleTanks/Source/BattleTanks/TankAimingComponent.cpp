@@ -91,6 +91,11 @@ void UTankAimingComponent::AimAt(FVector TargetLocation)
 	}
 }
 
+EFiringState UTankAimingComponent::GetFiringState()
+{
+	return FiringState;
+}
+
 void UTankAimingComponent::RotateTowardsFireSolution(FVector FireSolution)
 {
 	auto muzzleRot = Barrel->GetForwardVector().Rotation();

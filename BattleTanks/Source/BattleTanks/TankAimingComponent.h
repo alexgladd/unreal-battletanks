@@ -46,6 +46,9 @@ public:
 	// Command the component to aim at the given world location
 	void AimAt(FVector TargetLocation);
 
+	// Get the current firing state
+	EFiringState GetFiringState();
+
 protected:
 
 	// Current firing state

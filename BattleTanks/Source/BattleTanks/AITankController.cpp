@@ -30,7 +30,8 @@ void AAITankController::Tick(float DeltaSeconds)
 	if (!ensure(fireControl)) return;
 	fireControl->AimAt(targetTank->GetActorLocation());
 
-	// fire the gun
-	// TODO only fire when our aim is reasonably close?
-	//fireControl->Fire();
+	// only fire when our aim is locked?
+	if (fireControl->GetFiringState() == EFiringState::Locked) {
+		//fireControl->Fire();
+	}
 }

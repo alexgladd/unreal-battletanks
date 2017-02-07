@@ -16,8 +16,8 @@ public:
 	// Constructor
 	UTankTrack();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	// Called at startup
+	void BeginPlay() override;
 	
 	// Set the throttle for the track
 	UFUNCTION(BlueprintCallable, Category = Driving)
@@ -28,4 +28,17 @@ private:
 	// Maximum driving force of the track in newtons
 	UPROPERTY(EditDefaultsOnly, Category = Driving)
 	float MaxDrivingForce = 400000.f;
+
+	// Track throttle setting
+	float CurrentThrottle = 0.f;
+
+	// Detect collisions with the ground to know when we should apply force
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult &Hit);
+
+	// Drive the track based on throttle setting
+	void DriveTrack();
+
+	// Counteract side slipping
+	void ApplySidewaysForce();
 };

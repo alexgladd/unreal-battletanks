@@ -20,10 +20,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
-private:
+protected:
 
 	// How close should the AI try to get to the target (units)
 	UPROPERTY(EditDefaultsOnly, Category = AI)
-	float ApproachDistance = 5000.f;
+	float ApproachDistance = 8000.f;
 
 };
