@@ -32,6 +32,6 @@ void AAITankController::Tick(float DeltaSeconds)
 
 	// only fire when our aim is locked?
 	if (fireControl->GetFiringState() == EFiringState::Locked) {
-		//fireControl->Fire();
+		fireControl->Fire();
 	}
 }

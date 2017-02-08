@@ -16,7 +16,8 @@ enum class EFiringState : uint8
 {
 	Reloading,
 	Aiming,
-	Locked
+	Locked,
+	OutOfAmmo
 };
 
 // Controls the aiming of the turret and barrel
@@ -55,6 +56,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = Firing)
 	EFiringState FiringState = EFiringState::Reloading;
 
+	// Current ammo remaining
+	UPROPERTY(BlueprintReadOnly, Category = Firing)
+	int32 AmmoRemaining;
+
 private:
 
 	// Muzzle speed of fired projectiles (units per second)
@@ -64,6 +69,10 @@ private:
 	// Time to reload the gun (seconds)
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTime = 3.f;
+
+	// Starting ammo (count)
+	UPROPERTY(EditAnywhere, Category = Firing)
+	int32 StartingAmmo = 10;
 
 	// Reference to projectile prototype
 	UPROPERTY(EditDefaultsOnly, Category = Firing)

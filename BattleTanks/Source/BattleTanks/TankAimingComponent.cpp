@@ -28,7 +28,7 @@ void UTankAimingComponent::Fire()
 {
 	if (!ensure(Barrel)) return;
 
-	if (FiringState != EFiringState::Reloading) {
+	if (FiringState != EFiringState::Reloading && FiringState != EFiringState::OutOfAmmo) {
 		// spawn projectile with muzzle location and rotation
 		FName muzzleSocket("Muzzle");
 		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileToSpawn, Barrel->GetSocketLocation(muzzleSocket), Barrel->GetSocketRotation(muzzleSocket));
@@ -39,6 +39,9 @@ void UTankAimingComponent::Fire()
 		// start reloading
 		FiringState = EFiringState::Reloading;
 		LastFireTime = FPlatformTime::Seconds();
+
+		// consume ammo
+		AmmoRemaining -= 1;
 	}
 }
 
@@ -50,6 +53,9 @@ void UTankAimingComponent::BeginPlay()
 	// force tanks to start with a reload
 	FiringState = EFiringState::Reloading;
 	LastFireTime = FPlatformTime::Seconds();
+
+	// setup ammo
+	AmmoRemaining = StartingAmmo;
 
 	// init muzzle aim
 	if (ensure(Barrel)) {
@@ -63,7 +69,10 @@ void UTankAimingComponent::TickComponent( float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	if ((FPlatformTime::Seconds() - LastFireTime) <= ReloadTime) {
+	if (AmmoRemaining <= 0) {
+		FiringState = EFiringState::OutOfAmmo;
+	}
+	else if ((FPlatformTime::Seconds() - LastFireTime) <= ReloadTime) {
 		FiringState = EFiringState::Reloading;
 	}
 	else if (!RequestedMuzzleAim.Equals(Barrel->GetForwardVector(), 0.01f)) {
