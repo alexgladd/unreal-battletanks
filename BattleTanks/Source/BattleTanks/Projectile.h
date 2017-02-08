@@ -25,6 +25,14 @@ public:
 
 protected:
 
-	UProjectileMovementComponent* MovementComponent;
+	UProjectileMovementComponent* MovementComponent = nullptr;
+
+	// Collision mesh for the projectile
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* CollisionMesh = nullptr;
+
+	// Particle system for generating the launch blast
+	UPROPERTY(VisibleAnywhere)
+	UParticleSystemComponent* LaunchBlast = nullptr;
 	
 };
