@@ -21,6 +21,13 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called when the tank takes damage
+	float TakeDamage(float DamageAmount, FDamageEvent const &DamageEvent, AController* Instigator, AActor* Causer) override;
+
+	// Get the current health percentage (0.0-1.0)
+	UFUNCTION(BlueprintPure, Category = "Tank")
+	float GetHealthPercentage() const;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Firing)
@@ -28,5 +35,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Driving)
 	UTankMovementComponent* MovementComponent = nullptr;
+
+private:
+
+	// How much health the tank starts with
+	UPROPERTY(EditDefaultsOnly, Category = "Tank")
+	float StartingHealth = 100.f;
+
+	// Current tank health
+	UPROPERTY(VisibleAnywhere, Category = "Tank")
+	float CurrentHealth;
 
 };

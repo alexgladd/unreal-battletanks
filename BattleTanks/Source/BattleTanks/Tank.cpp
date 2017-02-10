@@ -21,4 +21,21 @@ ATank::ATank()
 void ATank::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// setup health
+	CurrentHealth = StartingHealth;
+}
+
+float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AController * Instigator, AActor * Causer)
+{
+	auto damageToApply = FMath::Clamp<float>(FMath::RoundToFloat(DamageAmount), 0.f, CurrentHealth);
+
+	CurrentHealth -= damageToApply;
+
+	return damageToApply;
+}
+
+float ATank::GetHealthPercentage() const
+{
+	return CurrentHealth / StartingHealth;
 }

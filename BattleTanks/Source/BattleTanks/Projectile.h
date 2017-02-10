@@ -36,10 +36,25 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* ImpactBlast = nullptr;
 
+	// Particle system for generating the impact blast
+	UPROPERTY(VisibleAnywhere)
+	URadialForceComponent* ImpactForce = nullptr;
+
 private:
+
+	// How long to wait before destroying projectile after impact with something
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	float DestroyDelay = 10.f;
+
+	// How much damage the projectile does
+	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+	float ImpactDamage = 20.f;
 
 	// Detect collisions to know when we should fire the impact particle effect
 	UFUNCTION()
 	void OnImpact(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult &Hit);
+
+	// Called by a timer to destroy the projectile
+	void OnTimerFire();
 	
 };

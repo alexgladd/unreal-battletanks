@@ -23,6 +23,9 @@ AProjectile::AProjectile()
 	ImpactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("ImpactBlast"));
 	ImpactBlast->bAutoActivate = false;
 	ImpactBlast->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	ImpactForce = CreateDefaultSubobject<URadialForceComponent>(FName("ImpactForce"));
+	ImpactForce->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
@@ -43,5 +46,22 @@ void AProjectile::OnImpact(UPrimitiveComponent * HitComponent, AActor * OtherAct
 {
 	LaunchBlast->Deactivate();
 	ImpactBlast->Activate();
+	ImpactForce->FireImpulse();
+
+	// remove the collision mesh
+	SetRootComponent(ImpactBlast);
+	CollisionMesh->DestroyComponent();
+
+	// apply explosion damage
+	UGameplayStatics::ApplyRadialDamage(this, ImpactDamage, GetActorLocation(), ImpactForce->Radius, UDamageType::StaticClass(), TArray<AActor*>());
+
+	// set a timer to destroy the projectile actor
+	FTimerHandle timer;
+	GetWorld()->GetTimerManager().SetTimer<AProjectile>(timer, this, &AProjectile::OnTimerFire, DestroyDelay);
+}
+
+void AProjectile::OnTimerFire()
+{
+	Destroy();
 }
 
