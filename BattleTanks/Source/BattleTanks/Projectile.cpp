@@ -12,9 +12,11 @@ AProjectile::AProjectile()
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("ProjectileMovement"));
 	MovementComponent->bAutoActivate = false;
+	MovementComponent->bRotationFollowsVelocity = true;
 
 	CollisionMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName("CollisionMesh"));
 	CollisionMesh->SetNotifyRigidBodyCollision(true);
+	CollisionMesh->SetVisibility(false);
 	SetRootComponent(CollisionMesh);
 
 	LaunchBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("LaunchBlast"));

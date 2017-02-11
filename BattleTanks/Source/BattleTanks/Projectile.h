@@ -21,7 +21,9 @@ public:
 	void LaunchProjectile(float Speed);
 
 protected:
-
+	
+	// Projectile movement
+	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* MovementComponent = nullptr;
 
 	// Collision mesh for the projectile
