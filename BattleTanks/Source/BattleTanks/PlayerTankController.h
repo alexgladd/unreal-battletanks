@@ -19,6 +19,9 @@ public:
 
 	// Called every frame
 	void Tick(float DeltaTime) override;
+
+	// Called when this controller posesses a pawn
+	void SetPawn(APawn* Pawn) override;
 	
 private:
 
@@ -39,4 +42,8 @@ private:
 
 	// Get the world location the player is aiming at
 	bool GetSightRayHitLocation(FVector &HitLocation) const;
+
+	// Called by delegate when possessed tank dies
+	UFUNCTION()
+	void OnPossessedTankDeath();
 };

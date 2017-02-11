@@ -4,6 +4,7 @@
 #include "PlayerTankController.h"
 
 #include "TankAimingComponent.h"
+#include "Tank.h"
 
 
 void APlayerTankController::BeginPlay()
@@ -16,6 +17,19 @@ void APlayerTankController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimTowardsCrosshair();
+}
+
+void APlayerTankController::SetPawn(APawn * Pawn)
+{
+	Super::SetPawn(Pawn);
+
+	if (Pawn) {
+		ATank* possessedTank = Cast<ATank>(Pawn);
+
+		if (!ensure(possessedTank)) return;
+
+		possessedTank->OnTankDeath.AddUniqueDynamic(this, &APlayerTankController::OnPossessedTankDeath);
+	}
 }
 
 void APlayerTankController::AimTowardsCrosshair()
@@ -67,4 +81,12 @@ bool APlayerTankController::GetSightRayHitLocation(FVector & HitLocation) const
 	else {
 		return false;
 	}
+}
+
+void APlayerTankController::OnPossessedTankDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s possessed tank death!"), *GetName());
+
+	// become a spectator
+	StartSpectatingOnly();
 }

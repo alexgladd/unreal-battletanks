@@ -18,10 +18,10 @@ void AAITankController::Tick(float DeltaSeconds)
 
 	// get references 
 	auto targetTank = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (!ensure(targetTank)) return;
+	if (!targetTank) return;
 
 	auto myTank = GetPawn();
-	if (!ensure(myTank)) return;
+	if (!myTank) return;
 
 	// move towards the target
 	MoveToActor(targetTank, ApproachDistance);
@@ -33,7 +33,7 @@ void AAITankController::Tick(float DeltaSeconds)
 
 	// only fire when our aim is locked?
 	if (fireControl->GetFiringState() == EFiringState::Locked) {
-		//fireControl->Fire();
+		fireControl->Fire();
 	}
 }
 
@@ -53,4 +53,11 @@ void AAITankController::SetPawn(APawn * Pawn)
 void AAITankController::OnPossessedTankDeath()
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s possessed tank death!"), *GetName());
+
+	// detach from the pawn
+	auto pawn = GetPawn();
+
+	if (pawn) {
+		pawn->DetachFromControllerPendingDestroy();
+	}
 }
