@@ -5,6 +5,8 @@
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTankDelegate);
+
 // forward decls
 class UTankAimingComponent;
 class UTankMovementComponent;
@@ -27,6 +29,9 @@ public:
 	// Get the current health percentage (0.0-1.0)
 	UFUNCTION(BlueprintPure, Category = "Tank")
 	float GetHealthPercentage() const;
+
+	// Delegate for tank death events
+	FTankDelegate OnTankDeath;
 
 protected:
 

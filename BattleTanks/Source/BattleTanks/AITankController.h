@@ -20,10 +20,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	// Called when this controller posesses a pawn
+	void SetPawn(APawn* Pawn) override;
+
 protected:
 
 	// How close should the AI try to get to the target (units)
 	UPROPERTY(EditDefaultsOnly, Category = AI)
 	float ApproachDistance = 8000.f;
+
+private:
+
+	// Called by delegate when possessed tank dies
+	UFUNCTION()
+	void OnPossessedTankDeath();
 
 };

@@ -4,6 +4,7 @@
 #include "AITankController.h"
 
 #include "TankAimingComponent.h"
+#include "Tank.h"
 
 
 void AAITankController::BeginPlay()
@@ -34,4 +35,22 @@ void AAITankController::Tick(float DeltaSeconds)
 	if (fireControl->GetFiringState() == EFiringState::Locked) {
 		//fireControl->Fire();
 	}
+}
+
+void AAITankController::SetPawn(APawn * Pawn)
+{
+	Super::SetPawn(Pawn);
+
+	if (Pawn) {
+		ATank* possessedTank = Cast<ATank>(Pawn);
+
+		if (!ensure(possessedTank)) return;
+
+		possessedTank->OnTankDeath.AddUniqueDynamic(this, &AAITankController::OnPossessedTankDeath);
+	}
+}
+
+void AAITankController::OnPossessedTankDeath()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s possessed tank death!"), *GetName());
 }

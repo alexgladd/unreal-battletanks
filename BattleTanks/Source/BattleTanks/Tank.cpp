@@ -32,6 +32,11 @@ float ATank::TakeDamage(float DamageAmount, FDamageEvent const & DamageEvent, AC
 
 	CurrentHealth -= damageToApply;
 
+	// broadcast if dead
+	if (CurrentHealth <= 0.f) {
+		OnTankDeath.Broadcast();
+	}
+
 	return damageToApply;
 }
 
