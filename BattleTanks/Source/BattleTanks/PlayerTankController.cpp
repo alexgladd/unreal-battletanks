@@ -69,7 +69,7 @@ bool APlayerTankController::GetSightRayHitLocation(FVector & HitLocation) const
 				traceResult,
 				traceStart,
 				traceEnd,
-				ECollisionChannel::ECC_Visibility)) {
+				ECollisionChannel::ECC_Camera)) {
 			// successful trace
 			HitLocation = traceResult.Location;
 			return true;
